@@ -5,11 +5,38 @@ import javax.swing.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Janela responsável por registrar entradas de produtos no estoque.
+ * <p>
+ * Permite ao usuário informar:
+ * </p>
+ * <ul>
+ *     <li>Código do produto a ser movimentado;</li>
+ *     <li>Quantidade que será adicionada ao estoque;</li>
+ *     <li>Valor unitário da entrada;</li>
+ *     <li>Data da movimentação (preenchida automaticamente, mas editável).</li>
+ * </ul>
+ *
+ * <p>
+ * Após o registro, o movimento é salvo e o estoque do produto é atualizado.
+ * </p>
+ *
+ * @author GustavoVirges
+ */
 public class TelaRegistrarEntrada extends JDialog {
 
-    private ControleEstoque controle;
-    private DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    /** Controle responsável pelos dados e operações do estoque. */
+    private final ControleEstoque controle;
 
+    /** Formatação padrão aplicada à data exibida e digitada pelo usuário. */
+    private final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    /**
+     * Constrói a janela de registro de entrada.
+     *
+     * @param parent    janela principal que abriu este diálogo
+     * @param controle  instância responsável pelo gerenciamento de estoque
+     */
     public TelaRegistrarEntrada(JFrame parent, ControleEstoque controle) {
         super(parent, "Registrar Entrada", true);
         this.controle = controle;
@@ -50,6 +77,9 @@ public class TelaRegistrarEntrada extends JDialog {
         add(lblData); add(txtData);
         add(btnRegistrar);
 
+        /**
+         * Ação do botão que efetivamente registra a entrada no estoque.
+         */
         btnRegistrar.addActionListener(e -> {
             try {
                 String codigo = txtProduto.getText().trim();
@@ -66,7 +96,7 @@ public class TelaRegistrarEntrada extends JDialog {
                 EntradaProduto entrada = new EntradaProduto(valor, data, qtd, p, null);
                 controle.registrarMovimento(entrada);
 
-                JOptionPane.showMessageDialog(this, "Entrada registrada.");
+                JOptionPane.showMessageDialog(this, "Entrada registrada com sucesso.");
                 dispose();
 
             } catch (Exception ex) {

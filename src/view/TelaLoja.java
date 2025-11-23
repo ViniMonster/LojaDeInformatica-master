@@ -4,12 +4,41 @@ import model.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.Objects;
 
+/**
+ * Janela principal da aplicação de controle de estoque.
+ * <p>
+ * A TelaLoja funciona como o hub central do sistema, permitindo:
+ * </p>
+ * <ul>
+ *     <li>Cadastro de produtos;</li>
+ *     <li>Listagem dos produtos cadastrados;</li>
+ *     <li>Registro de entradas e saídas;</li>
+ *     <li>Consulta de saldos;</li>
+ *     <li>Listagem das movimentações do estoque.</li>
+ * </ul>
+ *
+ * <p>
+ * Ela reúne menus, formulários e uma tabela integrada para exibição dos produtos,
+ * oferecendo ao usuário uma interface completa e intuitiva.
+ * </p>
+ *
+ * @author GustavoVirges
+ */
 public class TelaLoja extends JFrame {
 
-    private ControleEstoque controle;
-    private DefaultTableModel modeloTabela;
+    /** Controle responsável por manipular os dados de produtos e movimentos. */
+    private final ControleEstoque controle;
 
+    /** Modelo usado para atualizar o conteúdo da tabela de produtos. */
+    private final DefaultTableModel modeloTabela;
+
+    /**
+     * Constrói a interface principal da loja.
+     *
+     * @param controle instância usada para gerenciar os dados de estoque
+     */
     public TelaLoja(ControleEstoque controle) {
         this.controle = controle;
 
@@ -21,6 +50,7 @@ public class TelaLoja extends JFrame {
 
         getContentPane().setBackground(new Color(235, 235, 235));
 
+        // -------- Painel de Menu --------
         JPanel menu = new JPanel();
         menu.setLayout(null);
         menu.setBounds(30, 30, 320, 550);
@@ -45,6 +75,7 @@ public class TelaLoja extends JFrame {
         menu.add(btnSaldo);
         menu.add(btnMovimentos);
 
+        // -------- Painel de Cadastro --------
         JPanel cadastro = new JPanel();
         cadastro.setLayout(null);
         cadastro.setBounds(380, 30, 520, 280);
@@ -68,8 +99,10 @@ public class TelaLoja extends JFrame {
         lblPreco.setBounds(20, 165, 120, 30);
         lblQtd.setBounds(20, 200, 120, 30);
 
-        cadastro.add(lblCodigo); cadastro.add(lblNome);
-        cadastro.add(lblCategoria); cadastro.add(lblPreco);
+        cadastro.add(lblCodigo);
+        cadastro.add(lblNome);
+        cadastro.add(lblCategoria);
+        cadastro.add(lblPreco);
         cadastro.add(lblQtd);
 
         JTextField txtCodigo = new JTextField();
@@ -82,8 +115,10 @@ public class TelaLoja extends JFrame {
         txtPreco.setBounds(140, 165, 340, 30);
         txtQtd.setBounds(140, 200, 340, 30);
 
-        cadastro.add(txtCodigo); cadastro.add(txtNome);
-        cadastro.add(txtPreco); cadastro.add(txtQtd);
+        cadastro.add(txtCodigo);
+        cadastro.add(txtNome);
+        cadastro.add(txtPreco);
+        cadastro.add(txtQtd);
 
         JComboBox<String> categoriaBox = new JComboBox<>(
                 new String[]{"hardware", "perifericos", "acessorios", "outrosProdutos"}
@@ -104,6 +139,7 @@ public class TelaLoja extends JFrame {
         cadastro.add(btnNovo);
         cadastro.add(btnExcluir);
 
+        // -------- Tabela de Produtos --------
         String[] colunas = {"Código", "Nome", "Categoria", "Preço", "Estoque"};
         modeloTabela = new DefaultTableModel(colunas, 0);
 
@@ -114,6 +150,7 @@ public class TelaLoja extends JFrame {
 
         carregarProdutosNaTabela();
 
+        // -------- Ações dos botões (cadastro) --------
         btnSalvar.addActionListener(e -> {
             try {
                 String codigo = txtCodigo.getText().trim();
@@ -128,8 +165,9 @@ public class TelaLoja extends JFrame {
 
                 float precoF = Float.parseFloat(preco.replace(",", "."));
                 int qtdI = Integer.parseInt(qtd);
-
-                Categoria cat = Categoria.valueOf(categoriaBox.getSelectedItem().toString());
+                Categoria cat = Categoria.valueOf(
+                        Objects.requireNonNull(categoriaBox.getSelectedItem()).toString()
+                );
 
                 if (controle.buscarProdutoPorCodigo(codigo) != null) {
                     JOptionPane.showMessageDialog(null, "Código já cadastrado.");
@@ -180,6 +218,7 @@ public class TelaLoja extends JFrame {
             modeloTabela.removeRow(linha);
         });
 
+        // -------- Ações dos botões do menu --------
         btnEntrada.addActionListener(e -> new TelaRegistrarEntrada(this, controle));
         btnSaida.addActionListener(e -> new TelaRegistrarSaida(this, controle));
         btnSaldo.addActionListener(e -> new TelaConsultarSaldo(this, controle));
@@ -188,6 +227,9 @@ public class TelaLoja extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Recarrega os produtos exibidos na tabela usando os dados do controle.
+     */
     public void carregarProdutosNaTabela() {
         modeloTabela.setRowCount(0);
 
@@ -200,5 +242,15 @@ public class TelaLoja extends JFrame {
                     p.getQtdEstoque()
             });
         }
+    }
+
+    /**
+     * Método principal para iniciar o sistema standalone.
+     *
+     * @param args argumentos da linha de comando (não utilizados)
+     */
+    public static void main(String[] args) {
+        ControleEstoque controle = new ControleEstoque();
+        javax.swing.SwingUtilities.invokeLater(() -> new TelaLoja(controle));
     }
 }

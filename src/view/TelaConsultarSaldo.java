@@ -6,11 +6,37 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Janela responsável por exibir ao usuário o saldo atual do estoque,
+ * tanto em quantidade quanto em valor financeiro, além de permitir
+ * a consulta do saldo dentro de um período específico.
+ * <p>
+ * Esta tela é modal e bloqueia a janela principal enquanto está aberta.
+ * </p>
+ *
+ * <p>O usuário pode visualizar:</p>
+ * <ul>
+ *     <li>Saldo total em quantidade;</li>
+ *     <li>Saldo total em valor;</li>
+ *     <li>Consultar o valor movimentado em um período desejado.</li>
+ * </ul>
+ *
+ * @author GustavoVirges
+ */
 public class TelaConsultarSaldo extends JDialog {
 
-    private ControleEstoque controle;
-    private DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    /** Controle principal responsável pelos cálculos de saldo. */
+    private final ControleEstoque controle;
 
+    /** Formatação padrão para exibir e interpretar datas. */
+    private final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    /**
+     * Constrói a janela de consulta de saldo.
+     *
+     * @param parent    janela principal que abriu este diálogo
+     * @param controle  instância de controle responsável pelos cálculos de estoque
+     */
     public TelaConsultarSaldo(JFrame parent, ControleEstoque controle) {
         super(parent, "Consultar Saldo", true);
         this.controle = controle;
@@ -34,6 +60,7 @@ public class TelaConsultarSaldo extends JDialog {
         JButton btnConsultarPeriodo = new JButton("Consultar período");
         JLabel lblPeriodoResultado = new JLabel("Valor no período: R$ 0.00");
 
+        // Posicionamento dos componentes
         lblSaldoAtualQtd.setBounds(20, 20, 220, 25);
         lblQtdVal.setBounds(260, 20, 200, 25);
 
@@ -49,6 +76,7 @@ public class TelaConsultarSaldo extends JDialog {
         btnConsultarPeriodo.setBounds(180, 190, 160, 30);
         lblPeriodoResultado.setBounds(20, 230, 480, 25);
 
+        // Adicionando componentes à tela
         add(lblSaldoAtualQtd); add(lblQtdVal);
         add(lblSaldoAtualValor); add(lblValorVal);
         add(lblPeriodoInicio); add(txtInicio);
@@ -56,6 +84,9 @@ public class TelaConsultarSaldo extends JDialog {
         add(btnConsultarPeriodo);
         add(lblPeriodoResultado);
 
+        /**
+         * Ação do botão que calcula o saldo no período fornecido.
+         */
         btnConsultarPeriodo.addActionListener(e -> {
             try {
                 LocalDateTime inicio = LocalDateTime.parse(txtInicio.getText().trim(), fmt);

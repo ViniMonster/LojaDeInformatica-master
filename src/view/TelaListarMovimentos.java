@@ -7,11 +7,37 @@ import java.awt.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Janela responsável por exibir, em forma de tabela, todos os movimentos
+ * registrados no estoque. A listagem inclui entradas, vendas, usos internos,
+ * devoluções e outras saídas.
+ * <p>
+ * A tabela apresenta informações importantes como:
+ * data, tipo de movimento, produto, quantidade movimentada,
+ * valor unitário, impacto no estoque e impacto financeiro.
+ * </p>
+ *
+ * <p>
+ * O último registro exibido na tabela corresponde ao saldo final
+ * acumulado de quantidade e valor.
+ * </p>
+ *
+ * @author GustavoVirges
+ */
 public class TelaListarMovimentos extends JDialog {
 
-    private ControleEstoque controle;
-    private DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    /** Controle que fornece os movimentos do estoque. */
+    private final ControleEstoque controle;
 
+    /** Formatação padrão usada para exibir datas na tabela. */
+    private final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    /**
+     * Construtor da janela de listagem de movimentos.
+     *
+     * @param parent    a janela principal que abriu este diálogo
+     * @param controle  instância que gerencia operações de estoque
+     */
     public TelaListarMovimentos(JFrame parent, ControleEstoque controle) {
         super(parent, "Movimentos do Estoque", true);
         this.controle = controle;
@@ -20,7 +46,10 @@ public class TelaListarMovimentos extends JDialog {
         setLayout(new BorderLayout());
         setLocationRelativeTo(parent);
 
-        String[] colunas = {"Data", "Tipo", "Produto", "Qtd", "Valor Unit", "Impacto Qtd", "Impacto Valor"};
+        String[] colunas = {
+                "Data", "Tipo", "Produto", "Qtd",
+                "Valor Unit", "Impacto Qtd", "Impacto Valor"
+        };
 
         DefaultTableModel modelo = new DefaultTableModel(colunas, 0);
         JTable tabela = new JTable(modelo);
@@ -33,6 +62,12 @@ public class TelaListarMovimentos extends JDialog {
         setVisible(true);
     }
 
+    /**
+     * Preenche a tabela com todos os movimentos registrados,
+     * aplicando ordenação por data e cálculo dos impactos.
+     *
+     * @param modelo modelo da tabela onde os dados serão inseridos
+     */
     private void carregarMovimentos(DefaultTableModel modelo) {
         modelo.setRowCount(0);
 
@@ -67,6 +102,9 @@ public class TelaListarMovimentos extends JDialog {
             });
         }
 
-        modelo.addRow(new Object[]{"", "", "SALDO ATUAL", saldoQtd, "", "", String.format("%.2f", saldoValor)});
+        // Linha final exibindo o saldo total acumulado
+        modelo.addRow(new Object[]{
+                "", "", "SALDO ATUAL", saldoQtd, "", "", String.format("%.2f", saldoValor)
+        });
     }
 }

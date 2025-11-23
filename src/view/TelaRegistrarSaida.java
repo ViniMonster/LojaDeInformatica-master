@@ -5,11 +5,40 @@ import javax.swing.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Janela responsável por registrar saídas de produtos do estoque.
+ * <p>
+ * O usuário pode escolher entre diferentes tipos de saída:
+ * </p>
+ * <ul>
+ *     <li><b>VENDA</b> – saída para um cliente;</li>
+ *     <li><b>USO</b> – consumo interno da loja;</li>
+ *     <li><b>DEVOLUCAO</b> – devolução para fornecedor;</li>
+ *     <li><b>OUTRA</b> – outro tipo de saída não categorizada;</li>
+ * </ul>
+ *
+ * <p>
+ * Cada tipo de saída pode exigir um detalhe extra (cliente, fornecedor, destino, etc.).
+ * A tela valida os campos, cria a saída correspondente e delega ao controle
+ * para registrar o movimento.
+ * </p>
+ *
+ * @author GustavoVirges
+ */
 public class TelaRegistrarSaida extends JDialog {
 
-    private ControleEstoque controle;
-    private DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    /** Controle responsável pelo gerenciamento do estoque. */
+    private final ControleEstoque controle;
 
+    /** Formatação usada para exibir e interpretar datas digitadas pelo usuário. */
+    private final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    /**
+     * Constrói a tela para registro de saídas de produtos.
+     *
+     * @param parent   janela principal que abriu este diálogo
+     * @param controle instância do controle de estoque
+     */
     public TelaRegistrarSaida(JFrame parent, ControleEstoque controle) {
         super(parent, "Registrar Saída", true);
         this.controle = controle;
@@ -65,6 +94,9 @@ public class TelaRegistrarSaida extends JDialog {
         add(lblExtra); add(txtExtra);
         add(btnRegistrar);
 
+        /**
+         * Ação do botão responsável por validar e registrar a saída no estoque.
+         */
         btnRegistrar.addActionListener(e -> {
             try {
                 String codigo = txtProduto.getText().trim();
@@ -104,7 +136,7 @@ public class TelaRegistrarSaida extends JDialog {
 
                 controle.registrarMovimento(saida);
 
-                JOptionPane.showMessageDialog(this, "Saída registrada.");
+                JOptionPane.showMessageDialog(this, "Saída registrada com sucesso.");
                 dispose();
 
             } catch (Exception ex) {
